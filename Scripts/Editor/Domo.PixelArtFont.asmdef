@@ -1,0 +1,21 @@
+{
+    "name": "Domo.PixelArtFont",
+    "rootNamespace": "",
+    "references": [
+        "GUID:6055be8ebefd69e48b49212b09b47b2f",
+        "GUID:77974a5cfb0f4c4468a40f4ff69f4a6f",
+        "GUID:47dce82b6a7029049b48b7046c608b7e",
+        "GUID:3ca6fc3fcd778404c9b3a0feec0164a2"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
