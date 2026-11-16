@@ -1,0 +1,67 @@
+#pragma kernel Analyzer
+#pragma kernel AnalyzerSingleChannel
+
+RWStructuredBuffer<uint> _Result;
+
+Texture2D<float4> _MainTex;
+float4 _Dimensions;
+float4 _CellBounds;
+int2 _CellSize;
+int _CellsPerRow;
+float4 _Bounds;
+
+bool HasPixel(uint2 pixelPos) 
+{
+    const float kEpsilon = 0.001;
+    float4 c = _MainTex[pixelPos];
+    return c.a > kEpsilon;
+}
+
+bool HasPixelSingleChannel(uint2 pixelPos) 
+{
+    const float kEpsilon = 0.001;
+    float4 c = _MainTex[pixelPos];
+    return c.r > kEpsilon;
+}
+
+bool OutOfBounds(uint3 pixelPos) 
+{
+    return pixelPos.x < (uint) _Bounds.x || pixelPos.y < (uint) _Bounds.y
+        || pixelPos.x >= (uint)_Bounds.z || pixelPos.y >= (uint)_Bounds.w;
+}
+
+int2 GetCellPos(uint3 pixelPos) 
+{
+    int cellPosX = pixelPos.x / (uint)_CellSize.x;
+    pixelPos.y -= ((uint)_Dimensions.y % (uint)_CellSize.y);
+    int cellPosY = pixelPos.y / (uint) _CellSize.y;
+    return int2(cellPosX, cellPosY);
+}
+
+[numthreads(8, 8, 1)]
+void AnalyzerSingleChannel(uint3 pixelPos : SV_DispatchThreadID)
+{
+    if (OutOfBounds(pixelPos)) return;
+    if (!HasPixelSingleChannel(pixelPos.xy)) return;
+    
+    int2 cellPos = GetCellPos(pixelPos);
+    int i = 4 * ((_CellsPerRow * cellPos.y) + cellPos.x);
+    InterlockedMin(_Result[i + 0], pixelPos.x);
+    InterlockedMin(_Result[i + 1], pixelPos.y);
+    InterlockedMax(_Result[i + 2], pixelPos.x + 1);
+    InterlockedMax(_Result[i + 3], pixelPos.y + 1);
+}
+
+[numthreads(8, 8, 1)]
+void Analyzer(uint3 pixelPos : SV_DispatchThreadID)
+{
+    if (OutOfBounds(pixelPos)) return;
+    if (!HasPixel(pixelPos.xy)) return;
+    
+    int2 cellPos = GetCellPos(pixelPos);
+    int i = 4 * ((_CellsPerRow * cellPos.y) + cellPos.x);
+    InterlockedMin(_Result[i + 0], pixelPos.x);
+    InterlockedMin(_Result[i + 1], pixelPos.y);
+    InterlockedMax(_Result[i + 2], pixelPos.x + 1);
+    InterlockedMax(_Result[i + 3], pixelPos.y + 1);
+}
