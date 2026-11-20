@@ -1,4 +1,4 @@
-# PixelArtFont
+# PixelArtFontTool
 A unity tool for creating TMP (TextMeshPro) font assets out of textures.
 
 This is a tool I developed out of necessity for Soda-Powered Penguin, as Unity's TMP does not offer any options to create a font from a texture. This is particularly bad for pixel art fonts.
